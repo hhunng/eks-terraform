@@ -1,3 +1,11 @@
 variable "vpc_pool" {
     description = "instance types option"
 }
+
+variable "private_subnet_cidr_blocks" {
+    description = "subnet_cidr_blocks"
+}
+
+variable "public_subnet_cidr_blocks" {
+    description = "subnet_cidr_blocks"
+}

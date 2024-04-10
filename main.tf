@@ -8,4 +8,10 @@ resource "aws_vpc" "create_vpc" {
     }
 }
 
+module "terraform_vpc" {
+    source = "./modules/network"
+    vpc_id = aws_vpc.create_vpc.id
+    public_subnet_cidr_blocks = var.public_subnet_cidr_blocks
+    private_subnet_cidr_blocks = var.private_subnet_cidr_blocks
+}
 
