@@ -42,7 +42,7 @@ resource "aws_route_table_association" "associate_subnet" {
     subnet_id = each.value.id
 }
 
-resource "aws_security_group" "allow_HTTP" {
+resource "aws_security_group" "allow_SSH" {
     name = "${var.vpc_pool[0].tags.Name}-sg"
     description = "Allow SSH from any hosts"
     vpc_id = var.vpc_id
