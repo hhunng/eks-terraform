@@ -15,3 +15,7 @@ variable "vpc_pool" {
 variable "default-gateway-ip" {
     description = "create default gateway ip range"
 }
+
+variable "custom_ports" {
+    description = "define custom ports"
+}

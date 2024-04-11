@@ -15,5 +15,6 @@ module "terraform_vpc" {
     private_subnet_cidr_blocks = var.private_subnet_cidr_blocks
     default-gateway-ip = var.default_gateway_ip
     vpc_pool = var.vpc_pool
+    custom_ports = var.custom_ports
 }
 

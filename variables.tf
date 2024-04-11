@@ -13,3 +13,7 @@ variable "public_subnet_cidr_blocks" {
 variable "default_gateway_ip" {
     description = "define default gateway ip range"
 }
+
+variable "custom_ports" {
+    description = "define custom ports"
+}
