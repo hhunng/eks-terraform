@@ -77,6 +77,6 @@ resource "aws_eip" "eip_allocations" {
 
 resource "aws_nat_gateway" "gw" {
   for_each = aws_subnet.create_public_subnets
-  allocation_id = aws_eip.eip_allocations[each.value.tags.Name].id
-  subnet_id = aws_subnet.create_public_subnets[each.value.tags.Name].id
+  allocation_id = aws_eip.eip_allocations[each.key].id
+  subnet_id = aws_subnet.create_public_subnets[each.key].id
 }
