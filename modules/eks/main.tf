@@ -12,7 +12,7 @@ resource "aws_iam_role" "eks_cluster" {
       "Action": "sts:AssumeRole"
     }
   ]
-}
+} 
 POLICY
 }
 
@@ -24,7 +24,7 @@ resource "aws_iam_role_policy_attachment" "amazon_eks_cluster_policy" {
 resource "aws_eks_cluster" "eks" {
   name = "eks"
   role_arn = aws_iam_role.eks_cluster.arn
-  version = "1.29.0"
+  version = "1.29"
   vpc_config {
     endpoint_private_access = false
     endpoint_public_access = true
@@ -90,7 +90,7 @@ resource "aws_eks_node_group" "nodes_general" {
   labels = {
     role = "nodes-general"
   }
-  version = "1.29.0"
+  version = "1.29"
   depends_on = [
     aws_iam_role_policy_attachment.amazon_eks_worker_node_policy_general,
     aws_iam_role_policy_attachment.amazon_eks_cni_policy_general,
