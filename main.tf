@@ -21,6 +21,15 @@ module "terraform_vpc" {
   default-gateway-ip         = var.default_gateway_ip
   vpc_pool                   = var.vpc_pool
   custom_ports               = var.custom_ports
+}
 
+module "terraform_eks" {
+  source = "./modules/eks"
+  subnet_ids = [
+    module.terraform_vpc.public_subnet-1a_id.id,
+    module.terraform_vpc.public_subnet-1b_id.id,
+    module.terraform_vpc.private_subnet-1a_id.id,
+    module.terraform_vpc.private_subnet-1b_id.id
+  ]
 }
 

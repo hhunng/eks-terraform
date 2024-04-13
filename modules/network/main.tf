@@ -1,12 +1,12 @@
 resource "aws_subnet" "create_public_subnets" {
-  for_each   = var.public_subnet_cidr_blocks
-  vpc_id     = var.vpc_id
-  cidr_block = each.value.ip_range
+  for_each                = var.public_subnet_cidr_blocks
+  vpc_id                  = var.vpc_id
+  cidr_block              = each.value.ip_range
   map_public_ip_on_launch = true
   tags = {
-    Name = each.value.tags.Name
+    Name                        = each.value.tags.Name
     "kubernetes.io/cluster/eks" = "shared"
-    "kubernetes.io/role/elb" = 1
+    "kubernetes.io/role/elb"    = 1
   }
   availability_zone = each.value.availability_zone
 }
@@ -16,9 +16,9 @@ resource "aws_subnet" "create_private_subnets" {
   vpc_id     = var.vpc_id
   cidr_block = each.value.ip_range
   tags = {
-    Name = each.value.tags.Name
+    Name                        = each.value.tags.Name
     "kubernetes.io/cluster/eks" = "shared"
-    "kubernetes.io/role/elb" = 1
+    "kubernetes.io/role/elb"    = 1
   }
   availability_zone = each.value.availability_zone
 }
@@ -30,7 +30,7 @@ resource "aws_internet_gateway" "create-igw" {
   }
 }
 
-resource "aws_route_table" "create_route_table" {
+resource "aws_route_table" "create_public_route_table" {
   vpc_id = var.vpc_id
   route {
     cidr_block = var.default-gateway-ip
@@ -41,10 +41,32 @@ resource "aws_route_table" "create_route_table" {
   }
 }
 
-resource "aws_route_table_association" "associate_subnet" {
+resource "aws_route_table" "create_private_route_table" {
+  for_each = aws_nat_gateway.create_nat_gw
+  vpc_id = var.vpc_id
+  route {
+    cidr_block = var.default-gateway-ip
+    gateway_id = each.value.id
+  }
+  tags = {
+    Name = "${var.vpc_pool[0].tags.Name}-route-table"
+  }
+}
+
+resource "aws_route_table_association" "associate_public_subnet" {
   for_each       = aws_subnet.create_public_subnets
-  route_table_id = aws_route_table.create_route_table.id
+  route_table_id = aws_route_table.create_public_route_table.id
   subnet_id      = each.value.id
+}
+
+resource "aws_route_table_association" "associate_private_subnet_1" {
+  route_table_id = aws_route_table.create_private_route_table["public_subnet-1a"].id
+  subnet_id      = aws_subnet.create_private_subnets["private_subnet-1a"].id
+}
+
+resource "aws_route_table_association" "associate_private_subnet_2" {
+  route_table_id = aws_route_table.create_private_route_table["public_subnet-1b"].id
+  subnet_id      = aws_subnet.create_private_subnets["private_subnet-1b"].id
 }
 
 resource "aws_security_group" "allow_SSH" {
@@ -71,12 +93,15 @@ resource "aws_security_group" "allow_SSH" {
 }
 
 resource "aws_eip" "eip_allocations" {
-  for_each = aws_subnet.create_public_subnets
+  for_each   = aws_subnet.create_public_subnets
   depends_on = [aws_internet_gateway.create-igw]
 }
 
-resource "aws_nat_gateway" "gw" {
-  for_each = aws_subnet.create_public_subnets
+resource "aws_nat_gateway" "create_nat_gw" {
+  for_each      = aws_subnet.create_public_subnets
   allocation_id = aws_eip.eip_allocations[each.key].id
-  subnet_id = aws_subnet.create_public_subnets[each.key].id
+  subnet_id     = aws_subnet.create_public_subnets[each.key].id
+  tags = {
+    Name = "${each.key}-natgw"
+  }
 }
