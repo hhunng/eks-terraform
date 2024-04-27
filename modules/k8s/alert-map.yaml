@@ -1,0 +1,19 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: alertmanager-config
+  namespace: monitoring
+data:
+  config.yml: |-
+    global:
+      slack_api_url: 'https://hooks.slack.com/services/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'
+
+    route:
+      receiver: 'slack-notifications'
+      group_by: [alertname, datacenter, app]
+
+    receivers:
+    - name: 'slack-notifications'
+      slack_configs:
+      - channel: '#prometheus'
+        text: 'https://internal.myorg.net/wiki/alerts/{{ .GroupLabels.app }}/{{ .GroupLabels.alertname }}' 
