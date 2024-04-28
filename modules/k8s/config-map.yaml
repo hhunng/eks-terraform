@@ -65,33 +65,18 @@ data:
           regex: (.+)
           target_label: __metrics_path__
           replacement: /api/v1/nodes/${1}/proxy/metrics
-      - job_name: 'kubernetes-pods'
+      - job_name: 'k8pods'
         kubernetes_sd_configs:
         - role: pod
         relabel_configs:
-        - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
+        - source_labels: [__meta_kubernetes_pod_container_port_name]
+          regex: prometheus-port|metrics
           action: keep
-          regex: true
-        - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_path]
+        - source_labels: [__meta_kubernetes_pod_container_name]
+          regex: '(.*)'
+          replacement: '${1}'
+          target_label: job
           action: replace
-          target_label: __metrics_path__
-          regex: (.+)
-        - source_labels: [__address__, __meta_kubernetes_pod_annotation_prometheus_io_port]
-          action: replace
-          regex: ([^:]+)(?::\d+)?;(\d+)
-          replacement: $1:$2
-          target_label: __address__
-        - action: labelmap
-          regex: __meta_kubernetes_pod_label_(.+)
-        - source_labels: [__meta_kubernetes_namespace]
-          action: replace
-          target_label: kubernetes_namespace
-        - source_labels: [__meta_kubernetes_pod_name]
-          action: replace
-          target_label: kubernetes_pod_name
-      - job_name: 'kube-state-metrics'
-        static_configs:
-          - targets: ['kube-state-metrics.kube-system.svc.cluster.local:8080']
       - job_name: 'kubernetes-cadvisor'
         scheme: https
         tls_config:

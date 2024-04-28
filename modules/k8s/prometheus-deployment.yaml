@@ -30,7 +30,8 @@ spec:
             - "--config.file=/etc/prometheus/prometheus.yml"
             - "--storage.tsdb.path=/prometheus/"
           ports:
-            - containerPort: 9090
+            - name: prometheus-port
+              containerPort: 9090
           resources:
             requests:
               cpu: 500m
