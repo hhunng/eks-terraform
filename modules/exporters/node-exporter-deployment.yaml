@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: node-exporter
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: node-exporter
+  template:
+    metadata:
+      name: exporter
+      labels:
+        app: node-exporter
+    spec:
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: topology.kubernetes.io/region
+          whenUnsatisfiable: DoNotSchedule
+          labelSelector:
+            matchLabels:
+              app: node-exporter
+      containers:
+      - name: node-exporter
+        image: prom/node-exporter
+        ports:
+        - name: nodeport
+          containerPort: 9100
+        resources:
+          limits:
+            memory: "0.5Gi"
+            cpu: "1000m"
+          requests: 
+            memory: 500M
+            cpu: "500m"
+
