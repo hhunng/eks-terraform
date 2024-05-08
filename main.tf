@@ -1,5 +1,15 @@
 provider "aws" {}
 
+data "aws_secretsmanager_secret_version" "creds" {
+  secret_id = "tfvarsmodule"
+}
+
+locals {
+  tfvars_cred = jsondecode(
+    data.aws_secretsmanager_secret_version.creds.secret_string
+  )
+}
+
 resource "aws_vpc" "create_vpc" {
   cidr_block = var.vpc_pool[0].cidr_block
 
@@ -12,6 +22,8 @@ resource "aws_vpc" "create_vpc" {
     Env  = var.vpc_pool[0].tags.Env
   }
 }
+
+
 
 module "terraform_vpc" {
   source                     = "./modules/network"
@@ -34,13 +46,13 @@ module "terraform_eks" {
 }
 
 module "terraform_karpenter" {
-  source = "./modules/karpenter"
-  eks_node_object = module.terraform_eks.eks_node_object
-  eks_issuer = module.terraform_eks.eks_issuer
+  source              = "./modules/karpenter"
+  eks_node_object     = module.terraform_eks.eks_node_object
+  eks_issuer          = module.terraform_eks.eks_issuer
   eks_role_nodes_name = module.terraform_eks.eks_role_nodes_name
-  eks_endpoint = module.terraform_eks.eks_endpoint
-  eks_data = module.terraform_eks.eks_data
-  eks_cluster_id = module.terraform_eks.eks_cluster_id
+  eks_endpoint        = module.terraform_eks.eks_endpoint
+  eks_data            = module.terraform_eks.eks_data
+  eks_cluster_id      = module.terraform_eks.eks_cluster_id
 }
 
-
+#
