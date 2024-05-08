@@ -33,3 +33,14 @@ module "terraform_eks" {
   ]
 }
 
+module "terraform_karpenter" {
+  source = "./modules/karpenter"
+  eks_node_object = module.terraform_eks.eks_node_object
+  eks_issuer = module.terraform_eks.eks_issuer
+  eks_role_nodes_name = module.terraform_eks.eks_role_nodes_name
+  eks_endpoint = module.terraform_eks.eks_endpoint
+  eks_data = module.terraform_eks.eks_data
+  eks_cluster_id = module.terraform_eks.eks_cluster_id
+}
+
+
