@@ -55,4 +55,4 @@ module "terraform_karpenter" {
   eks_cluster_id = module.terraform_eks.eks_cluster_id
 }
 
-
+#
