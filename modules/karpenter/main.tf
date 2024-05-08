@@ -89,6 +89,4 @@ resource "helm_release" "karpenter" {
     name  = "aws.defaultInstanceProfile"
     value = aws_iam_instance_profile.karpenter.name
   }
-
-  depends_on = [var.eks_node_object]
 }

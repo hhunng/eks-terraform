@@ -1,6 +1,3 @@
-variable "eks_node_object" {
-}
-
 variable "eks_issuer" {
 }
 variable "eks_role_nodes_name" {

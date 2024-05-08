@@ -1,7 +1,3 @@
-output "eks_node_object" {
-  value = aws_eks_node_group.nodes_general
-}
-
 output "eks_issuer" {
   value = aws_eks_cluster.eks.identity[0].oidc[0].issuer
 
