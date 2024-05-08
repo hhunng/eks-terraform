@@ -1,5 +1,4 @@
 #ignore sensitive data
-*.tfvars
 
 #ignore .venv
 .venv

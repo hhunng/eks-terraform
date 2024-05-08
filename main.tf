@@ -1,5 +1,15 @@
 provider "aws" {}
 
+data "aws_secretsmanager_secret_version" "creds" {
+  secret_id = "tfvarsmodule"
+}
+
+locals {
+  tfvars_cred = jsondecode(
+  data.aws_secretsmanager_secret_version.creds.secret_string
+  )
+}
+
 resource "aws_vpc" "create_vpc" {
   cidr_block = var.vpc_pool[0].cidr_block
 
@@ -12,6 +22,8 @@ resource "aws_vpc" "create_vpc" {
     Env  = var.vpc_pool[0].tags.Env
   }
 }
+
+
 
 module "terraform_vpc" {
   source                     = "./modules/network"
