@@ -1,1 +1,1 @@
-![Architecture](modules/exporters/architecture.png)
+![Architecture](gitops.png)
